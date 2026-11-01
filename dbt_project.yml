@@ -1,0 +1,25 @@
+name: 'dbt_explore'
+version: '0.1.0'
+require-dbt-version: ['>=1.6.0', '<3.0.0']
+
+profile: 'dbt_explore'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests/integration"]
+seed-paths: ["seeds"]
+macro-paths: ["macros", "tests/helpers"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  dbt_explore:
+    inputs:
+      +materialized: table
+      +hours_to_expiration: 24
+    profiles:
+      +materialized: table
+      +hours_to_expiration: 24

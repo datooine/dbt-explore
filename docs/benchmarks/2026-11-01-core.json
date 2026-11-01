@@ -1,0 +1,368 @@
+{
+  "recorded_at": "2026-11-01T09:40:26.693402+00:00",
+  "mode": "executed",
+  "runtime": {
+    "dbt-core": "1.12.6",
+    "dbt-bigquery": "1.12.1",
+    "google-cloud-bigquery": "3.47.0"
+  },
+  "location": "EU",
+  "job_project": "bigquery-sandbox-cpvuft6h",
+  "input": {
+    "relation": "bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input",
+    "rows": 100000,
+    "logical_bytes": 9175000,
+    "replication_factor": 12500,
+    "source_rows": 8,
+    "source_relation": "bigquery-sandbox-cpvuft6h.tmp.dbt_explore_explore_fixture",
+    "expiration_utc": "2026-11-02T09:39:38.131000+00:00",
+    "creation_job_id": "068e053d-8bce-4e16-9b78-94d6ec6bbb15"
+  },
+  "maximum_bytes_billed_per_job": 1000000000,
+  "variables": {
+    "dbt_explore_benchmark": true,
+    "dbt_explore_benchmark_relation": {
+      "database": "bigquery-sandbox-cpvuft6h",
+      "schema": "tmp",
+      "identifier": "dbt_explore_benchmark_input"
+    },
+    "dbt_explore_benchmark_columns": [
+      "amount",
+      "constant_numeric",
+      "big_numeric",
+      "float_number",
+      "label",
+      "flag",
+      "customer.id",
+      "items"
+    ],
+    "dbt_explore_benchmark_grouping_sets": [
+      [],
+      [
+        "country"
+      ],
+      [
+        "country",
+        "channel"
+      ]
+    ],
+    "dbt_explore_benchmark_where": null,
+    "dbt_explore_benchmark_quantiles": 4,
+    "dbt_explore_benchmark_extra_percentiles": [],
+    "dbt_explore_benchmark_top_n": 10
+  },
+  "queries": {
+    "shared": {
+      "sha256": "ac68729f1363cded0643863277d00f3863b5a881af54f3dbcb3ca43b9fe1a10b"
+    },
+    "per_column": {
+      "sha256": "6659d6396ed1e2ee9fcabae71a9c9714d8417b768e66a3167f27855bc5703ee3"
+    }
+  },
+  "runs": [
+    {
+      "variant": "shared",
+      "iteration": 1,
+      "job_id": "e4296107-4837-473d-b44e-fd932236c40f",
+      "total_bytes_processed": 5750000,
+      "total_bytes_billed": 10485760,
+      "slot_millis": 6924,
+      "elapsed_seconds": 3.4520902350013785,
+      "output_rows": 88,
+      "cache_hit": false,
+      "execution_stages": 10,
+      "source_table_read_stages": 2
+    },
+    {
+      "variant": "per_column",
+      "iteration": 1,
+      "job_id": "651a8d48-22f0-453a-affb-0a433afb44ca",
+      "total_bytes_processed": 5750000,
+      "total_bytes_billed": 10485760,
+      "slot_millis": 7232,
+      "elapsed_seconds": 1.4910748420006712,
+      "output_rows": 88,
+      "cache_hit": false,
+      "execution_stages": 50,
+      "source_table_read_stages": 11
+    },
+    {
+      "variant": "per_column",
+      "iteration": 2,
+      "job_id": "07a10a15-83c9-4c97-8575-58485b118876",
+      "total_bytes_processed": 5750000,
+      "total_bytes_billed": 10485760,
+      "slot_millis": 7435,
+      "elapsed_seconds": 1.6690982069994789,
+      "output_rows": 88,
+      "cache_hit": false,
+      "execution_stages": 50,
+      "source_table_read_stages": 11
+    },
+    {
+      "variant": "shared",
+      "iteration": 2,
+      "job_id": "afdb78e6-7bdf-46d1-a4b7-973120f03ef9",
+      "total_bytes_processed": 5750000,
+      "total_bytes_billed": 10485760,
+      "slot_millis": 6917,
+      "elapsed_seconds": 2.968876488001115,
+      "output_rows": 88,
+      "cache_hit": false,
+      "execution_stages": 10,
+      "source_table_read_stages": 2
+    },
+    {
+      "variant": "shared",
+      "iteration": 3,
+      "job_id": "1ec90cfd-eaa2-43c3-bdd0-1f8f9f99d123",
+      "total_bytes_processed": 5750000,
+      "total_bytes_billed": 10485760,
+      "slot_millis": 8049,
+      "elapsed_seconds": 5.116920410000603,
+      "output_rows": 88,
+      "cache_hit": false,
+      "execution_stages": 10,
+      "source_table_read_stages": 2
+    },
+    {
+      "variant": "per_column",
+      "iteration": 3,
+      "job_id": "e9867f87-57d7-4c22-be56-3008ba99cb44",
+      "total_bytes_processed": 5750000,
+      "total_bytes_billed": 10485760,
+      "slot_millis": 7259,
+      "elapsed_seconds": 1.7669679860009637,
+      "output_rows": 88,
+      "cache_hit": false,
+      "execution_stages": 50,
+      "source_table_read_stages": 11
+    }
+  ],
+  "medians": {
+    "shared": {
+      "total_bytes_processed_median": 5750000,
+      "slot_millis_median": 6924,
+      "elapsed_seconds_median": 3.4520902350013785
+    },
+    "per_column": {
+      "total_bytes_processed_median": 5750000,
+      "slot_millis_median": 7259,
+      "elapsed_seconds_median": 1.6690982069994789
+    }
+  },
+  "representative_source_reads": {
+    "shared": [
+      {
+        "id": "0",
+        "name": "S00: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 124,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$10:country, $11:channel, $12:amount, $13:constant_numeric, $14:big_numeric, $15:float_number, $16:label, $17:flag, $18:items, $19:customer.id",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "name": "S02: Input",
+        "records_read": 100000,
+        "records_written": 13,
+        "slot_millis": 165,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$1:country, $2:channel, $3:label, $4:flag, $5:customer.id",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      }
+    ],
+    "per_column": [
+      {
+        "id": "2",
+        "name": "S02: Input",
+        "records_read": 100000,
+        "records_written": 3,
+        "slot_millis": 128,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$20:country, $21:channel, $22:customer.id",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "name": "S03: Input",
+        "records_read": 100000,
+        "records_written": 4,
+        "slot_millis": 122,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$10:country, $11:channel, $12:flag",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "name": "S04: Input",
+        "records_read": 100000,
+        "records_written": 6,
+        "slot_millis": 98,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$1:country, $2:channel, $3:label",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "5",
+        "name": "S05: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 79,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$30:country, $31:channel, $32:items",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "6",
+        "name": "S06: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 41,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$100:country, $101:channel, $102:customer.id",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "7",
+        "name": "S07: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 47,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$90:country, $91:channel, $92:flag",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "8",
+        "name": "S08: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 31,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$80:country, $81:channel, $82:label",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "9",
+        "name": "S09: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 65,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$70:country, $71:channel, $72:float_number",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "10",
+        "name": "S0A: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 54,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$60:country, $61:channel, $62:big_numeric",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "11",
+        "name": "S0B: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 61,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$50:country, $51:channel, $52:constant_numeric",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "12",
+        "name": "S0C: Input",
+        "records_read": 100000,
+        "records_written": 100000,
+        "slot_millis": 30,
+        "source_read_steps": [
+          {
+            "kind": "READ",
+            "substeps": [
+              "$40:country, $41:channel, $42:amount",
+              "FROM bigquery-sandbox-cpvuft6h.tmp.dbt_explore_benchmark_input"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

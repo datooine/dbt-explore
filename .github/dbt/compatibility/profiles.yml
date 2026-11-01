@@ -1,0 +1,20 @@
+# Placeholder profiles for parsing without warehouse access.
+dbt_explore:
+  target: bigquery
+  outputs:
+    bigquery:
+      type: bigquery
+      method: oauth
+      project: dbt-explore-compatibility
+      dataset: dbt_explore
+      location: EU
+      threads: 1
+    snowflake:
+      type: snowflake
+      account: placeholder
+      user: placeholder
+      password: placeholder
+      database: placeholder
+      schema: placeholder
+      warehouse: placeholder
+      threads: 1

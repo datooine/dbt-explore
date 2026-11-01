@@ -1,0 +1,48 @@
+version: 2
+
+macros:
+  - name: profile_relation
+    description: '{{ doc("profile_relation") }}'
+    arguments:
+      - name: relation
+        type: relation
+        description: Physical table or view Relation to profile; metadata must exist at compilation.
+      - name: columns
+        type: optional[list[string]]
+        description: Explicit column or dotted field paths; parent paths include descendants.
+      - name: exclude_columns
+        type: optional[list[string]]
+        description: Paths removed after discovery or selection; parent paths exclude descendants.
+      - name: where
+        type: optional[string]
+        description: Trusted SQL predicate applied to profile input before aggregation, without WHERE.
+      - name: group_by
+        type: optional[list[string]]
+        description: Scalar grouping paths in output-position order; mutually exclusive with grouping_sets.
+      - name: grouping_sets
+        type: optional[list[list[string]]]
+        description: Grouping levels; an empty inner list is the total. Positions follow first appearance.
+      - name: population
+        type: optional[relation]
+        description: Independently aggregated physical Relation providing population row counts.
+      - name: population_group_by
+        type: optional[list[string]]
+        description: Compatible grouping paths present in every profile grouping set; omitted means global.
+      - name: population_where
+        type: optional[string]
+        description: Independent trusted predicate applied only to the population relation.
+      - name: quantiles
+        type: integer
+        description: Non-negative approximate quantile interval count, default 4; zero disables regular boundaries.
+      - name: extra_percentiles
+        type: optional[list[integer]]
+        description: Extra percentile boundaries from 0 through 100; deduplicated and returned in ascending order.
+      - name: top_n
+        type: integer
+        description: Maximum approximate non-null STRING/BOOL top values, default 10; zero disables computation.
+
+  - name: bigquery__profile_relation
+    description: '{{ doc("bigquery__profile_relation") }}'
+
+  - name: default__profile_relation
+    description: '{{ doc("default__profile_relation") }}'

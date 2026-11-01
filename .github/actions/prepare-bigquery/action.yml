@@ -1,0 +1,27 @@
+name: Prepare BigQuery
+description: Configure the dbt CI profile and decode the service-account credential.
+inputs:
+  service-account-base64:
+    description: Base64-encoded BigQuery CI service-account JSON.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Prepare dbt profile and credentials
+      shell: bash
+      env:
+        SERVICE_ACCOUNT_BASE64: ${{ inputs.service-account-base64 }}
+      run: |
+        set -euo pipefail
+        if [ -z "$SERVICE_ACCOUNT_BASE64" ]; then
+          echo "DBT_BIGQUERY_CI_SERVICE_ACCOUNT_JSON_BASE64 secret is empty" >&2
+          exit 1
+        fi
+        DBT_PROFILE_DIRECTORY="$RUNNER_TEMP/dbt-explore-profiles"
+        DBT_CREDENTIAL_FILE="$RUNNER_TEMP/dbt-explore-bq-key.json"
+        mkdir -p "$DBT_PROFILE_DIRECTORY"
+        cp .github/dbt/profiles.yml "$DBT_PROFILE_DIRECTORY/profiles.yml"
+        umask 077
+        printf '%s' "$SERVICE_ACCOUNT_BASE64" | base64 --decode > "$DBT_CREDENTIAL_FILE"
+        echo "DBT_PROFILES_DIR=$DBT_PROFILE_DIRECTORY" >> "$GITHUB_ENV"
+        echo "GOOGLE_APPLICATION_CREDENTIALS=$DBT_CREDENTIAL_FILE" >> "$GITHUB_ENV"

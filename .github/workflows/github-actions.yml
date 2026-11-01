@@ -1,0 +1,153 @@
+name: dbt checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  parse-checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dbt-extra: [dev-v1, dev-v2]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        run: pip install uv
+      - name: Report dbt version
+        run: uv run --locked --extra ${{ matrix.dbt-extra }} dbt --version
+      - name: Check compatibility without warehouse credentials
+        run: uv run --locked --extra ${{ matrix.dbt-extra }} python3 scripts/check_compatibility.py
+
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dbt-extra: dev-v1
+            runtime: core
+          - dbt-extra: dev-v2
+            runtime: v2
+    env:
+      DBT_EXPLORE_TEST_PREFIX: dbt_explore_${{ github.run_id }}_${{ github.run_attempt }}_${{ matrix.runtime }}_
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        run: pip install uv
+      - name: Sync dependencies
+        run: uv sync --locked --extra ${{ matrix.dbt-extra }}
+      - name: Report dbt version
+        run: uv run --locked --extra ${{ matrix.dbt-extra }} dbt --version
+      - uses: ./.github/actions/prepare-bigquery
+        with:
+          service-account-base64: ${{ secrets.DBT_BIGQUERY_CI_SERVICE_ACCOUNT_JSON_BASE64 }}
+      - name: dbt deps
+        run: uv run --locked --extra ${{ matrix.dbt-extra }} dbt deps
+      - name: BigQuery integration tests
+        run: uv run --locked --extra ${{ matrix.dbt-extra }} ./scripts/run_integration_tests.sh
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-explore-${{ matrix.runtime }}
+          path: |
+            target/manifest.json
+            target/run_results.json
+            logs/dbt.log
+          if-no-files-found: ignore
+
+  docs:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.actor != 'nektos/act'
+    needs: [checks, parse-checks]
+    runs-on: ubuntu-latest
+    env:
+      DBT_EXPLORE_TEST_PREFIX: dbt_explore_${{ github.run_id }}_${{ github.run_attempt }}_docs_
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install uv
+        run: pip install uv
+      - name: Sync dependencies
+        run: uv sync --locked --extra dev
+      - uses: ./.github/actions/prepare-bigquery
+        with:
+          service-account-base64: ${{ secrets.DBT_BIGQUERY_CI_SERVICE_ACCOUNT_JSON_BASE64 }}
+      - name: Generate docs
+        run: |
+          uv run --locked --extra dev dbt deps
+          uv run --locked --extra dev dbt run --select path:models/inputs --vars '{dbt_explore_integration_tests: true}'
+          uv run --locked --extra dev dbt docs generate --vars '{dbt_explore_integration_tests: true}'
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target
+
+  deploy-docs:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.actor != 'nektos/act'
+    needs: docs
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+
+  tag-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.actor != 'nektos/act'
+    needs: docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure git user
+        env:
+          GIT_ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+          RELEASE_ACTOR="${GIT_ACTOR:-github-actions[bot]}"
+          git config user.name "$RELEASE_ACTOR"
+          git config user.email "${RELEASE_ACTOR}@users.noreply.github.com"
+      - name: Extract project version
+        id: version
+        run: |
+          set -euo pipefail
+          VERSION=$(python3 -c "from pathlib import Path; print(next(line.partition(':')[2].strip().strip(chr(34)+chr(39)) for line in Path('dbt_project.yml').read_text().splitlines() if line.startswith('version:')))")
+          LAST_TAG=$(git tag --list | sort -V | tail -n 1)
+          if [ -n "$LAST_TAG" ]; then
+            if [ "$VERSION" = "$LAST_TAG" ]; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              echo "Tag $VERSION already exists; skipping."
+              exit 0
+            fi
+            if [ "$(printf '%s\n%s\n' "$LAST_TAG" "$VERSION" | sort -V | tail -n 1)" != "$VERSION" ]; then
+              echo "Detected version $VERSION is not greater than latest tag $LAST_TAG" >&2
+              exit 1
+            fi
+          fi
+          echo "tag=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Create and push tag
+        if: steps.version.outputs.skip != 'true'
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git tag -a "$RELEASE_TAG" -m "Release $RELEASE_TAG"
+          git push origin "$RELEASE_TAG"
